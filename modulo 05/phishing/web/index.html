@@ -1,0 +1,44 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>StealMyLogin.com Demo</title>
+</head>
+<body>
+<strong>Login</strong>
+<br/>
+<form action="" method="post">
+username:
+<br/>
+<input name="username" type="text"/>
+<br/>
+password:
+<br/>
+<input name="password" type="password"/>
+<br/>
+<input type="submit" value="login"/>
+</form>
+<div style="width: 350px; margin-top:1em; background: #efefef;padding: 2px 1em;border:1px solid #ddd">
+<p>
+Test with a dummy username and password.
+
+</p><p>
+This demo contains a login form on a non-HTTPS page.
+Even though the form is being submitted to a secure (HTTPS) page, 
+your login info can be easily stolen.
+</p><p>
+More info at <a href="/">stealmylogin.com</a>
+</p></div>
+<script src="http://data.stealmylogin.com/stealmylogin.js" type="text/javascript"></script>
+<script type="text/javascript"> 
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-1155620-6']);
+  _gaq.push(['_trackPageview']);
+ 
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+</body>
+</html>
