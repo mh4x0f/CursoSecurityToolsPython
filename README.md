@@ -1,5 +1,8 @@
 # Construindo Security Tools Python
 
+| [<img src="https://i.udemycdn.com/course/100x100/2166102_73e1.jpg"><br><sub>Udemy</sub><br><sub>by mh4x0f</sub>](https://www.udemy.com/course/construindo-security-tools-em-python/) |
+| :---: |
+
 > O melhor curso de Python voltado para segurança ofensiva
 
 Você provavelmente já ouviu falar sobre a linguagem Python.
